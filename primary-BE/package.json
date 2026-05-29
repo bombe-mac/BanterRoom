@@ -5,15 +5,29 @@
   "type": "module",
   "scripts": {
     "build": "tsc -b",
-    "start": "node dist/index.js",
-    "dev": "tsc -b && node dist/index.js"
+    "start": "node dist/src/index.js",
+    "dev": "tsc -b && node dist/src/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
-    "express": "^5.2.1"
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.20.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.20.0",
+    "prisma": "^7.8.0"
   }
 }

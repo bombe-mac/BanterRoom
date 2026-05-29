@@ -10,6 +10,11 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "esnext",
+    "baseUrl": ".",
+    "paths": {
+      "@chat/shared-types": ["../shared/index.ts"]
+    },
+    "ignoreDeprecations": "6.0",
     
     "types": [],
     // For nodejs:
@@ -42,5 +47,6 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "references": [{ "path": "../shared" }]
 }

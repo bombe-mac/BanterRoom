@@ -7,7 +7,7 @@ export interface BaseMessage {
 
 export interface ChatMessage extends BaseMessage {
     type: "chat";
-    message: string;
+    content: string;
 }
 
 export interface JoinRoomMessage extends BaseMessage {

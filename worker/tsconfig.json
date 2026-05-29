@@ -2,19 +2,13 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    "outDir": "./dist",
-    "rootDir": "./src",
+    // "rootDir": "./src",
+    // "outDir": "./dist",
+
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "ESNext",
-    "target": "ES2023",
-    "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "baseUrl": ".",
-    "paths": {
-      "@chat/shared-types": ["../shared/index.ts"]
-    },
-    "ignoreDeprecations": "6.0",
+    "module": "nodenext",
+    "target": "esnext",
     "types": [],
     // For nodejs:
     // "lib": ["esnext"],
@@ -46,8 +40,5 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  },
-  "references": [{ "path": "../shared" }],
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "prisma.config.ts"]
+  }
 }
