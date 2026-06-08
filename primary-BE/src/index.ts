@@ -1,24 +1,13 @@
 import 'dotenv/config';
 import express from 'express';
 import * as z from 'zod';
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma, prisma } from '@chat/shared-types';
 import bcrypt from 'bcrypt';
-import { PrismaPg} from "@prisma/adapter-pg";
 import jwt from "jsonwebtoken"
 import { authMiddleware, type AuthenticatedRequest } from "./middleware/authMiddleware";
 
 
 const app = express();
-
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-    throw new Error("DATABASE_URL is not set in the environment");
-}
-
-
-
-const adapter = new PrismaPg(databaseUrl);
-const prisma = new PrismaClient({ adapter });
 
 const isPrismaKnownRequestError = (
     error: unknown

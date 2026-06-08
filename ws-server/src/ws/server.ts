@@ -2,7 +2,9 @@ import { WebSocketServer, WebSocket } from "ws";
 import { sub, CHANNEL } from "../redis/client.js";
 import { broadcastToRoom, leaveAllRooms } from "./rooms.js";
 import { handleMessage } from "./handler.js";
-
+import type { JwtPayload } from "@chat/shared-types";
+import jwt from "jsonwebtoken";
+const { verify } = jwt;
 
 export const startServer=(port: number)=>{
     const wss =new WebSocketServer({port});
@@ -20,7 +22,35 @@ export const startServer=(port: number)=>{
         }
     })
 
-    wss.on('connection', (ws: WebSocket)=>{
+    wss.on('connection', (ws: WebSocket, req)=>{
+        // Expect token as query param: ws://host:port/?token=...
+        const query = typeof req?.url === 'string' ? req.url.split('?')[1] ?? '' : '';
+        const params = new URLSearchParams(query);
+        const token = params.get('token');
+        if (!token) {
+            ws.close(1008, 'Unauthorized');
+            return;
+        }
+
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            console.error('JWT_SECRET not set');
+            ws.close(1011, 'Server misconfigured');
+            return;
+        }
+
+        let payload: unknown;
+        try {
+            payload = verify(token, secret);
+        } catch (err) {
+            ws.close(1008, 'Invalid token');
+            return;
+        }
+
+        // attach authenticated payload to socket for handlers
+        (ws as any).user = payload as JwtPayload;
+
+        
         ws.on('message', (data)=> {
             console.log("data recieved")
             handleMessage(ws, data.toString())

@@ -10,11 +10,11 @@
     "target": "ES2023",
     "moduleResolution": "bundler",
     "esModuleInterop": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@chat/shared-types": ["../shared/index.ts"]
     },
-    "ignoreDeprecations": "6.0",
     "types": [],
     // For nodejs:
     // "lib": ["esnext"],

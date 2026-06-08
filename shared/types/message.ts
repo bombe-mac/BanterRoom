@@ -24,8 +24,8 @@ export type IncomingMessage = JoinRoomMessage | LeaveRoomMessage | ChatMessage;
 
 
 // ─── Outgoing (ws-server → Client) ───────────────────────────────────────────
-
-export type OutgoingMessageType = "chat" | "user-joined" | "user-left" | "error" | "room-joined";
+//diff between user
+export type OutgoingMessageType = "chat" | "user-left" | "error" | "room-joined";
 
 export interface OutgoingChatMessage {
     type: "chat";
@@ -35,12 +35,7 @@ export interface OutgoingChatMessage {
     timestamp: number;
 }
 
-export interface UserJoinedMessage {
-    type: "user-joined";
-    roomId: string;
-    userId: string;
-    timestamp: number;
-}
+
 
 export interface UserLeftMessage {
     type: "user-left";
@@ -62,7 +57,6 @@ export interface ErrorMessage {
 
 export type OutgoingMessage =
     | OutgoingChatMessage
-    | UserJoinedMessage
     | UserLeftMessage
     | RoomJoinedMessage
     | ErrorMessage;
@@ -71,12 +65,14 @@ export type OutgoingMessage =
 // ─── Redis Pub/Sub Payloads ───────────────────────────────────────────────────
 
 export interface RoomBroadcastPayload {
-    type: "chat" | "user-joined" | "user-left";
+    type: "chat" | "user-left";
     roomId: string;
     userId: string;
     content?: string;
     timestamp: number;
 }
+
+// ─── Redis Stream Payloads (for persistence) ─────────────────────────────────
 
 export interface PersistMessagePayload {
     roomId: string;

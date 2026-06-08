@@ -20,7 +20,7 @@ export const leaveAllRooms=(ws: WebSocket)=>{
     }
 }
 
-//send data to all clients(user) in a room
+//send message to all clients(user) in a room
 export const broadcastToRoom = (roomId: string, data: string) => {
     rooms[roomId]?.sockets.forEach((socket) => {
         if (socket.readyState === WebSocket.OPEN) {
