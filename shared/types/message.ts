@@ -24,8 +24,8 @@ export type IncomingMessage = JoinRoomMessage | LeaveRoomMessage | ChatMessage;
 
 
 // ─── Outgoing (ws-server → Client) ───────────────────────────────────────────
-//diff between user
-export type OutgoingMessageType = "chat" | "user-left" | "error" | "room-joined";
+//diff between user-left and leave-room is that user-left is sent to other clients in the room when someone leaves, while leave-room is sent by the client to ws-server to indicate they want to leave a room. user-left contains userId of the user who left, while leave-room does not contain userId as it is sent by the client itself
+export type OutgoingMessageType = "chat" | "error" | "room-joined";
 
 export interface OutgoingChatMessage {
     type: "chat";
@@ -37,12 +37,6 @@ export interface OutgoingChatMessage {
 
 
 
-export interface UserLeftMessage {
-    type: "user-left";
-    roomId: string;
-    userId: string;
-    timestamp: number;
-}
 
 export interface RoomJoinedMessage {
     type: "room-joined";
@@ -57,7 +51,6 @@ export interface ErrorMessage {
 
 export type OutgoingMessage =
     | OutgoingChatMessage
-    | UserLeftMessage
     | RoomJoinedMessage
     | ErrorMessage;
 
@@ -65,10 +58,10 @@ export type OutgoingMessage =
 // ─── Redis Pub/Sub Payloads ───────────────────────────────────────────────────
 
 export interface RoomBroadcastPayload {
-    type: "chat" | "user-left";
+    type: "chat";
     roomId: string;
     userId: string;
-    content?: string;
+    content: string;
     timestamp: number;
 }
 

@@ -39,9 +39,9 @@ export const startServer=(port: number)=>{
             return;
         }
 
-        let payload: unknown;
+        let payload: JwtPayload;
         try {
-            payload = verify(token, secret);
+            payload = verify(token, secret) as JwtPayload;
         } catch (err) {
             ws.close(1008, 'Invalid token');
             return;

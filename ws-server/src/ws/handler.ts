@@ -1,5 +1,5 @@
 import { pub, CHANNEL } from "../redis/client.js";
-import type { IncomingMessage, ChatMessage } from "@chat/shared-types";
+import type { IncomingMessage, ChatMessage, RoomBroadcastPayload } from "@chat/shared-types";
 import type { JwtPayload } from "@chat/shared-types";
 import { joinRoom } from "./rooms.js";
 import {WebSocket} from "ws";
@@ -28,9 +28,11 @@ export const handleMessage = async (ws: WebSocket, data: string) => {
     if (parsed.type === "chat") {
         console.log("publishing...")
         const msg = parsed as ChatMessage;
-        const enriched = {
-            ...msg,
+        const enriched: RoomBroadcastPayload = {
+            type: "chat",
+            roomId: msg.roomId,
             userId: authed.userId,
+            content: msg.content,
             timestamp: Date.now(),
         };
         await pub.publish(CHANNEL, JSON.stringify(enriched));
