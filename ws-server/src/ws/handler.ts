@@ -1,8 +1,7 @@
-import { pub, CHANNEL } from "../redis/client.js";
-import type { IncomingMessage, ChatMessage, RoomBroadcastPayload } from "@chat/shared-types";
-import type { JwtPayload } from "@chat/shared-types";
-import { joinRoom } from "./rooms.js";
-import {WebSocket} from "ws";
+import { pub, cmd, CHANNEL, STREAM_NAME } from "../redis/client.js";
+import { type IncomingMessage, type ChatMessage, type RoomBroadcastPayload } from "@chat/shared-types";
+import { joinRoom, leaveRoom } from "./rooms.js";
+import { WebSocket } from "ws";
 
 export const handleMessage = async (ws: WebSocket, data: string) => {
     let parsed: IncomingMessage;
@@ -10,31 +9,44 @@ export const handleMessage = async (ws: WebSocket, data: string) => {
     try {
         parsed = JSON.parse(data);
     } catch {
-        return; // invalid JSON
+        return;
     }
 
-    // ensure socket was authenticated on connect
-    const authed = (ws as any).user as JwtPayload | undefined;
+    const authed = (ws as any).user;
     if (!authed) return;
-
     if (!parsed.roomId || !parsed.type) return;
 
     if (parsed.type === "join-room") {
-        console.log("joining room...")
         joinRoom(parsed.roomId, ws);
         return;
     }
 
-    if (parsed.type === "chat") {
-        console.log("publishing...")
-        const msg = parsed as ChatMessage;
-        const enriched: RoomBroadcastPayload = {
-            type: "chat",
-            roomId: msg.roomId,
-            userId: authed.userId,
-            content: msg.content,
-            timestamp: Date.now(),
-        };
-        await pub.publish(CHANNEL, JSON.stringify(enriched));
+    if (parsed.type === "leave-room") {
+        leaveRoom(parsed.roomId, ws);
+        return;
     }
+
+    if (parsed.type !== "chat") return;
+
+    const msg = parsed as ChatMessage;
+    const timestamp = Date.now();
+
+    await cmd.xadd(
+        STREAM_NAME,
+        "*",
+        "roomId", msg.roomId,
+        "userId", authed.userId,
+        "content", msg.content,
+        "timestamp", String(timestamp)
+    );
+
+    const broadcast: RoomBroadcastPayload  = {
+        type: "chat",
+        roomId: msg.roomId,
+        userId: authed.userId,
+        content: msg.content,
+        timestamp,
+    };
+
+    await pub.publish(CHANNEL, JSON.stringify(broadcast));
 };

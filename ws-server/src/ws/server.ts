@@ -48,7 +48,8 @@ export const startServer=(port: number)=>{
         }
 
         // attach authenticated payload to socket for handlers
-        (ws as any).user = payload as JwtPayload;
+        //Extend the TypeScript type of ws to include user property
+        (ws as WebSocket & { user: JwtPayload }).user = payload as JwtPayload;
 
         
         ws.on('message', (data)=> {
@@ -59,7 +60,6 @@ export const startServer=(port: number)=>{
 
         ws.on('close', () => {
         leaveAllRooms(ws);
-
         });
 
         ws.on('error', console.error);
